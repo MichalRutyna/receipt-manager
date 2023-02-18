@@ -67,7 +67,7 @@ def main():
 if __name__ == '__main__':
     lookup = Lookup('lookup.csv')
     data = Database('dane.csv')
-    print("eee")
+    print("zmianaaa")
 
     # data.print_head(10)
     print("Witaj w bazie danych!")
