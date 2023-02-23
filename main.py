@@ -63,31 +63,23 @@ class Database:
 class Lookup:
     def __init__(self, path):
         self.path = path
-        self.df = pd.read_csv(self.path, sep=";")
+        self.df = pd.read_csv(self.path)
 
-    def check_category(self, name):
-        return self.df['Category'][self.df['Category'].where(self.df['Name'] == name.capitalize()).first_valid_index()]
-
-    def get_mean_price(self, name):
-        return self.df['Category'][self.df['Category'][2].first_valid_index()]
-
-    # def find_item(self, name):
-    #     name = name.capitalize()
-    #     if (index:= self.df.where(self.df['Name'] == name)) == 0
-    #         return Item(name=name,
-    #                     median_price=self.df["Median_price"].where(self.df['Name'] == name),
-    #                     category=self.df["Category"].where(self.df['Name'] == name))
-    #     else:
-    #         return None
-
-    def test(self, name):
+    def find_item(self, name):
         idx, names = pd.factorize(self.df['Name'])
-        print(names.get_indexer([name]))
+        item_index = names.get_indexer([name])[0]
+        if item_index == -1:
+            print("Nie znaleziono pasującego przedmiotu")
+            return None
+        item_as_list = self.df.iloc[item_index].to_list()
+        return Item(name=item_as_list[0],
+                    mean_price=item_as_list[1],
+                    category=item_as_list[2])
 
     def append_item(self, item: Item):
         item = [item.name, item.category, item.mean_price]
         thing_to_save = pd.DataFrame(item)
-        thing_to_save.to_csv(self.path, mode='a', sep=';', header=False, index=False)
+        thing_to_save.to_csv(self.path, mode='a', header=False, index=False)
 
 
 def main():
@@ -116,7 +108,7 @@ def main():
                 print("Średnia cena tego produktu to: ", baza_przedmiotow.check_category(nazwa))
 
             case 'test':
-                baza_przedmiotow.test("Poduszki")
+                print(baza_przedmiotow.test("Ser"))
 
             case 'q':
                 break
