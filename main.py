@@ -1,6 +1,4 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
 import datetime
 import pydantic
 from typing import List
@@ -86,20 +84,24 @@ class Lookup:
         thing_to_save.to_csv(self.path, mode='a', header=False, index=False)
 
     def create_item(self) -> None:
-        new_item = Item(name=input("Podaj nazwę: "),
-                        mean_price=-1,
-                        category=input("Podaj kategorię: "))
+        a = input("Podaj nazwę: ")
+        b = -1  # TODO obsługa mean_price
+        c = input("Podaj kategorię: ")
+        if self.category_query(c) is False:
+            return
+        new_item = Item(name=a, mean_price=b, category=c)
         self.append_item(new_item)
 
-    def category_query(self, query: str) -> str:
+    def category_query(self, query: str) -> bool:
+        query = query.lower().capitalize()
         if query in self.category_list:
-            return query
+            return True
         else:
             if self.create_category(query):
                 return self.category_query(query)
             else:
                 print("Wystąpił błąd przy wyszukiwaniu kategorii!")
-                return ''
+                return False
 
     def create_category(self, name) -> bool:
         try:
@@ -110,14 +112,18 @@ class Lookup:
         except ValueError:
             print("Wprowadzono nieprawidłową nazwę kategorii")
             return False
-        except Exception:
-            print("Wystąpił nieznany błąd przy tworzeniu kategorii")
-            return False
+
+
+def test(baza_przedmiotow):
+    assert baza_przedmiotow.category_query(baza_przedmiotow.category_list[0]) is True
+    assert baza_przedmiotow.create_category("!@#baza") is False
 
 
 def main():
     baza_przedmiotow = Lookup('lookup.csv')
     baza_zakupow = Database('data.csv')
+
+    test(baza_przedmiotow)
 
     print("Witaj w bazie danych!")
     while True:
@@ -128,7 +134,6 @@ def main():
                 print("Twoje dane:\n")
                 baza_zakupow.print_head(10)
             case '2':
-                chleb = Item(name="Ser", median_price=19.99, category="Essentials")
                 print("Wprowadzanie nowego zakupu: \n")
                 item_queried = None
                 while item_queried is None:
@@ -138,7 +143,7 @@ def main():
                         if input("Nie znaleziono takiego przedmiotu."
                                  " Chcesz utworzyć nowy przedmiot, czy spróbować ponownie? (1/2): ") == 2:
 
-                            baza_przedmiotow.append_item()
+                            baza_przedmiotow.create_item()
                 baza_zakupow.append_purchase([Purchase(item=item_queried,
                                                        price=float(input("Podaj cenę produktu: ")),
                                                        store=input("Podaj sklep: "),
