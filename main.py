@@ -1,6 +1,4 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
 import datetime
 import pydantic
 from typing import List
@@ -64,6 +62,10 @@ class Lookup:
     def __init__(self, path):
         self.path = path
         self.df = pd.read_csv(self.path)
+        self.category_list = self.get_category_list()
+
+    def get_category_list(self) -> List:
+        return pd.factorize(self.df['Category'])[1].tolist()
 
     def find_item(self, name):
         idx, names = pd.factorize(self.df['Name'])
@@ -76,15 +78,52 @@ class Lookup:
                     mean_price=item_as_list[1],
                     category=item_as_list[2])
 
-    def append_item(self, item: Item):
+    def append_item(self, item: Item) -> None:
         item = [item.name, item.category, item.mean_price]
         thing_to_save = pd.DataFrame(item)
         thing_to_save.to_csv(self.path, mode='a', header=False, index=False)
+
+    def create_item(self) -> None:
+        a = input("Podaj nazwę: ")
+        b = -1  # TODO obsługa mean_price
+        c = input("Podaj kategorię: ")
+        if self.category_query(c) is False:
+            return
+        new_item = Item(name=a, mean_price=b, category=c)
+        self.append_item(new_item)
+
+    def category_query(self, query: str) -> bool:
+        query = query.lower().capitalize()
+        if query in self.category_list:
+            return True
+        else:
+            if self.create_category(query):
+                return self.category_query(query)
+            else:
+                print("Wystąpił błąd przy wyszukiwaniu kategorii!")
+                return False
+
+    def create_category(self, name) -> bool:
+        try:
+            if any(char in ("!", "@", "#", "$", "%", "^", "&", "*", "(", ")") for char in name):
+                raise ValueError
+            self.category_list.append(name.lower().capitalize())
+            return True
+        except ValueError:
+            print("Wprowadzono nieprawidłową nazwę kategorii")
+            return False
+
+
+def test(baza_przedmiotow):
+    assert baza_przedmiotow.category_query(baza_przedmiotow.category_list[0]) is True
+    assert baza_przedmiotow.create_category("!@#baza") is False
 
 
 def main():
     baza_przedmiotow = Lookup('lookup.csv')
     baza_zakupow = Database('data.csv')
+
+    test(baza_przedmiotow)
 
     print("Witaj w bazie danych!")
     while True:
@@ -95,20 +134,29 @@ def main():
                 print("Twoje dane:\n")
                 baza_zakupow.print_head(10)
             case '2':
-                chleb = Item(name="Ser", median_price=19.99, category="Essentials")
                 print("Wprowadzanie nowego zakupu: \n")
-                baza_zakupow.append_purchase([Purchase(item=chleb,
+                item_queried = None
+                while item_queried is None:
+                    name_query = input("Podaj nazwę produktu: ")
+                    item_queried = baza_przedmiotow.find_item(name_query)
+                    if item_queried is None:
+                        if input("Nie znaleziono takiego przedmiotu."
+                                 " Chcesz utworzyć nowy przedmiot, czy spróbować ponownie? (1/2): ") == 2:
+
+                            baza_przedmiotow.create_item()
+                baza_zakupow.append_purchase([Purchase(item=item_queried,
                                                        price=float(input("Podaj cenę produktu: ")),
                                                        store=input("Podaj sklep: "),
                                                        date=datetime.date.today())])
             case '3':
                 nazwa = input("Nazwa produktu: ")
+                przedmiot = baza_przedmiotow.find_item(nazwa)
                 print("-" * 50)
-                print("Kategoria tego produktu to: ", baza_przedmiotow.check_category(nazwa))
-                print("Średnia cena tego produktu to: ", baza_przedmiotow.check_category(nazwa))
+                print("Kategoria tego produktu to: ", przedmiot.category)
+                print("Średnia cena tego produktu to: ", przedmiot.mean_price)
 
             case 'test':
-                print(baza_przedmiotow.test("Ser"))
+                pass
 
             case 'q':
                 break
