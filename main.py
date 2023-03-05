@@ -5,8 +5,8 @@ from custom_dataclasses import Purchase, Item
 
 
 def console_ui():
-    baza_przedmiotow = Lookup('lookup.csv')
-    baza_zakupow = Purchase_base('data.csv')
+    baza_przedmiotow = Lookup('data/lookup.csv')
+    baza_zakupow = Purchase_base('data/data.csv')
 
     print("Witaj w bazie danych!")
     while True:
