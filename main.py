@@ -1,7 +1,10 @@
 import datetime
-import tkinter as tk
-from databases import Lookup, Purchase_base
-from custom_dataclasses import Purchase, Item
+import tkinter
+from tkinter import ttk
+from PIL import ImageTk, Image
+import classes.gui as gui
+from classes.databases import Lookup, Purchase_base
+from classes.dataclasses import Purchase
 
 
 def console_ui():
@@ -52,9 +55,36 @@ def console_ui():
                 break
 
 
+def init_func_frame(master, root):
+    title_bar = gui.Title_bar(master)
+    title_bar.pack(side='top', fill='x')
+
+    title = tkinter.Label(title_bar, image=master.ikona, text=master.wm_title(), fg='gray', bg='black', padx='5px', compound='left')
+    close_button = gui.Button(title_bar, "#FF0000", text='X', font='Inter 13', width=5, bg='black',
+                              command=lambda: root.destroy(), )
+    maximize_button = gui.Button(title_bar, "#FF0000", text=chr(0x32), font='Marlett', width=3, bg='black',
+                                 command=lambda: master.malize())
+    inconify_button = gui.Button(title_bar, "#FF0000", text=chr(0x30), font='Marlett', width=3, bg='black',
+                                 command=lambda: root.iconify())
+    title.pack(side='left')
+    close_button.pack(side='right')
+    maximize_button.pack(side='right')
+    inconify_button.pack(side='right')
+
+    style = ttk.Style()
+    style.configure("Grip.TSizegrip", background="#121212")
+    grip = ttk.Sizegrip(master, style="Grip.TSizegrip")
+    grip.place(relx=1.0, rely=1.0, anchor="se")
+
+
 def main():
-    root = tk.Tk()
-    root.title("Menadżer budżetu")
+    root = gui.Root()
+    main_window = gui.Window(root)
+    init_func_frame(main_window, root)
+
+    content = tkinter.Label(main_window, bg='#121212')
+    content.pack()
+
     root.mainloop()
 
 

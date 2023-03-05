@@ -1,5 +1,4 @@
 import unittest
-from databases import Purchase, Lookup
 
 
 class Lookup_database_tests(unittest.TestCase):

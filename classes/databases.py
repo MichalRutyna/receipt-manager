@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import List
-from custom_dataclasses import Item, Purchase
+from classes.dataclasses import Item, Purchase
 
 
 class Purchase_base:
