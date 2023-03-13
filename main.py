@@ -1,7 +1,7 @@
 import datetime
+import logging
 import tkinter
 from tkinter import ttk
-from PIL import ImageTk, Image
 import classes.gui as gui
 from classes.databases import Lookup, Purchase_base
 from classes.dataclasses import Purchase
@@ -48,8 +48,12 @@ def console_ui():
                 print("Kategoria tego produktu to: ", przedmiot.category)
                 print("Średnia cena tego produktu to: ", przedmiot.mean_price)
 
-            case 'test':
+            case '4':
+                print("\nTworzenie nowego przedmiotu: \n")
                 baza_przedmiotow.create_item()
+
+            case 'test':
+                pass
 
             case 'q':
                 break
@@ -77,17 +81,16 @@ def init_func_frame(master, root):
     grip.place(relx=1.0, rely=1.0, anchor="se")
 
 
-def main():
+def GUI():
     root = gui.Root()
     main_window = gui.Window(root)
     init_func_frame(main_window, root)
     container = tkinter.Label(main_window, bg='#121212')
 
     navigation = tkinter.Label(container, bg='#333333', width=12)
-    navigation_buttons = []
-    navigation_buttons.append(data_list := gui.Button(navigation, "#333333", height=2, text="Wyświetl bazę danych"))
-    navigation_buttons.append(graphs := gui.Button(navigation, "#333333", height=2, text="Pokaż wykresy"))
-    navigation_buttons.append(new_purchases := gui.Button(navigation, "#333333", height=2, text="Dodaj nowy zakup"))
+    navigation_buttons = [data_list := gui.Button(navigation, "#333333", height=2, text="Wyświetl bazę danych"),
+                          graphs := gui.Button(navigation, "#333333", height=2, text="Pokaż wykresy"),
+                          new_purchases := gui.Button(navigation, "#333333", height=2, text="Dodaj nowy zakup")]
     for button in navigation_buttons:
         button.pack(side='top', fill='x')
 
@@ -97,6 +100,12 @@ def main():
     content.pack(fill='both', expand=100)
     container.pack(fill='both', expand=999)
     root.mainloop()
+
+
+def main():
+    logging.basicConfig(
+        level=logging.DEBUG)
+    console_ui()
 
 
 if __name__ == '__main__':

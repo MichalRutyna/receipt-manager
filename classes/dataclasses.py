@@ -1,5 +1,6 @@
 import pydantic
 import datetime
+import logging
 
 
 class Item(pydantic.BaseModel):
@@ -14,6 +15,10 @@ class Item(pydantic.BaseModel):
     name: str
     mean_price: float
     category: str
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        logging.debug(f"Created Item object {self.name}. Mean price: {self.mean_price}, category: {self.category}")
 
 
 class Purchase(pydantic.BaseModel):
@@ -31,3 +36,7 @@ class Purchase(pydantic.BaseModel):
     price: float
     store: str
     date: datetime.date
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        logging.debug(f"Created Purchase object ({self.item}). Price: {self.price}, store: {self.store}, date: {self.date}")
