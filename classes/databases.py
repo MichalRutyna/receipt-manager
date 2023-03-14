@@ -1,6 +1,6 @@
 import logging
 import pandas as pd
-from typing import List
+from typing import List, Optional
 from classes.dataclasses import Item, Purchase
 
 
@@ -13,7 +13,7 @@ class Purchase_base:
         self.df = pd.read_csv(self.path)
         logging.info(f"Initialized Purchase database at {self.path}")
 
-    def print_head(self, rows):
+    def print_head(self, rows: int) -> None:
         print(self.df.head(rows))
 
     def append_purchase(self, items: List[Purchase]) -> None:
@@ -30,7 +30,7 @@ class Purchase_base:
 
 
 class Lookup:
-    def __init__(self, path):
+    def __init__(self, path: str):
         self.path = path
         self.df = pd.read_csv(self.path)
         self.category_list = self.get_category_list()
@@ -39,7 +39,7 @@ class Lookup:
     def get_category_list(self) -> List:
         return pd.factorize(self.df['Category'])[1].tolist()
 
-    def find_item(self, name):
+    def find_item(self, name: str) -> Optional[Item]:
         idx, names = pd.factorize(self.df['Name'])
         item_index = names.get_indexer([name])[0]
         if item_index == -1:
@@ -57,6 +57,7 @@ class Lookup:
         logging.debug(f"Appended Item: {item}")
 
     def create_item(self) -> None:
+        # TODO create item by parameters
         a = input("Podaj nazwę: ")
         b = -1  # TODO obsługa mean_price
         c = input("Podaj kategorię: ")
@@ -71,7 +72,7 @@ class Lookup:
         if query not in self.category_list:
             self.create_category(query)
 
-    def create_category(self, name) -> None:
+    def create_category(self, name: str) -> None:
         if any(char in "!@#$%^&*()" for char in name):
             raise ValueError("Unallowed characters in category name")
         self.category_list.append(name.lower().capitalize())

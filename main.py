@@ -88,13 +88,15 @@ def GUI():
     container = tkinter.Label(main_window, bg='#121212')
 
     navigation = tkinter.Label(container, bg='#333333', width=12)
-    navigation_buttons = [data_list := gui.Button(navigation, "#333333", height=2, text="Wyświetl bazę danych"),
+    navigation_buttons = [home := gui.Button(navigation, "#333333", height=2, text="Strona główna"),
+                          data_list := gui.Button(navigation, "#333333", height=2, text="Wyświetl bazę danych"),
                           graphs := gui.Button(navigation, "#333333", height=2, text="Pokaż wykresy"),
                           new_purchases := gui.Button(navigation, "#333333", height=2, text="Dodaj nowy zakup")]
     for button in navigation_buttons:
         button.pack(side='top', fill='x')
 
     content = tkinter.Label(container, bg='#222222')
+    content.state = "home"
 
     navigation.pack(side='left', fill='y')
     content.pack(fill='both', expand=100)
@@ -103,9 +105,9 @@ def GUI():
 
 
 def main():
-    logging.basicConfig(
-        level=logging.DEBUG)
-    console_ui()
+    logging.basicConfig(level=logging.DEBUG,
+                        filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+    GUI()
 
 
 if __name__ == '__main__':
