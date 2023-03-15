@@ -2,6 +2,9 @@ import datetime
 import logging
 import tkinter
 from tkinter import ttk
+
+import pandas
+
 import classes.gui as gui
 from classes.databases import Lookup, Purchase_base
 from classes.dataclasses import Purchase
@@ -109,19 +112,28 @@ def GUI():
 
 
 def create_plots():
+    root = tkinter.Tk()
     baza_przedmiotow = Lookup('data/lookup.csv')
     baza_zakupow = Purchase_base('data/data.csv')
+    data2 = {'year': [1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010],
+             'unemployment_rate': [9.8, 12, 8, 7.2, 6.9, 7, 6.5, 6.2, 5.5, 6.3]
+             }
+    df2 = pandas.DataFrame(data2)
 
-    plt.pie(baza_przedmiotow.df["Median_price"],
-            labels=baza_przedmiotow.df["Name"])
-    plt.show()
+    figure2 = plt.Figure(figsize=(5, 4), dpi=100)
+    ax2 = figure2.add_subplot(111)
+    line = FigureCanvasTkAgg(figure2, root)
+    line.get_tk_widget().pack(side='left', fill='both')
+    df2 = baza_przedmiotow.df["Median_price"]
+    print(df2)
+    root.mainloop()
 
 
 def main():
 
     # logging.basicConfig(level=logging.DEBUG,
     #                     filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
-    console_ui()
+    create_plots()
 
 
 if __name__ == '__main__':
