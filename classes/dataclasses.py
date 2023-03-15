@@ -34,9 +34,10 @@ class Purchase(pydantic.BaseModel):
     """
     item: Item
     price: float
+    amount: int
     store: str
     date: datetime.date
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        logging.debug(f"Created Purchase object ({self.item}). Price: {self.price}, store: {self.store}, date: {self.date}")
+        logging.debug(f"Created Purchase object ({self.item}). Price: {self.price}, Amount: {self.amount} store: {self.store}, date: {self.date}")

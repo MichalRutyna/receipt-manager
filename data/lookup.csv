@@ -1,7 +1,7 @@
 Name,Median_price,Category
-Chleb,5.99,Jedzenie
-Ser,19.99,Jedzenie
-Poduszki,15.59,Dekoracje
-Poduszka,12.59,Dekoracjazuupa
-płyny
--1.0
+chleb,5.99,jedzenie
+ser,19.99,jedzenie
+poduszki,15.59,dekoracje
+poduszka,12.59,dekoracja
+szynka,-1.0,jedzenie
+roszponka,-1.0,jedzenie

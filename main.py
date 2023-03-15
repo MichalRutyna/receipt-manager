@@ -5,6 +5,9 @@ from tkinter import ttk
 import classes.gui as gui
 from classes.databases import Lookup, Purchase_base
 from classes.dataclasses import Purchase
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 def console_ui():
@@ -39,6 +42,7 @@ def console_ui():
                                     break
                 baza_zakupow.append_purchase([Purchase(item=item_queried,
                                                        price=float(input("Podaj cenę produktu: ")),
+                                                       amount=int(input("Podaj ilość: ")),
                                                        store=input("Podaj sklep: "),
                                                        date=datetime.date.today())])
             case '3':
@@ -59,7 +63,7 @@ def console_ui():
                 break
 
 
-def init_func_frame(master, root):
+def init_func_frame(master: gui.Window, root):
     title_bar = gui.Title_bar(master)
     title_bar.pack(side='top', fill='x')
 
@@ -104,10 +108,20 @@ def GUI():
     root.mainloop()
 
 
+def create_plots():
+    baza_przedmiotow = Lookup('data/lookup.csv')
+    baza_zakupow = Purchase_base('data/data.csv')
+
+    plt.pie(baza_przedmiotow.df["Median_price"],
+            labels=baza_przedmiotow.df["Name"])
+    plt.show()
+
+
 def main():
-    logging.basicConfig(level=logging.DEBUG,
-                        filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
-    GUI()
+
+    # logging.basicConfig(level=logging.DEBUG,
+    #                     filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+    console_ui()
 
 
 if __name__ == '__main__':

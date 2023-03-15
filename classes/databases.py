@@ -22,7 +22,7 @@ class Purchase_base:
         :param items:
         :return:
         """
-        items = [[purchase.item.name, purchase.price, purchase.store, purchase.date] for purchase in items]
+        items = [[purchase.item.name, purchase.price, purchase.amount, purchase.store, purchase.date] for purchase in items]
         thing_to_save = pd.DataFrame(items)
         thing_to_save.to_csv(self.path, mode='a', header=False, index=False)
         self.df = pd.read_csv(self.path)  # refresh
@@ -40,6 +40,7 @@ class Lookup:
         return pd.factorize(self.df['Category'])[1].tolist()
 
     def find_item(self, name: str) -> Optional[Item]:
+        self.df = pd.read_csv(self.path)
         idx, names = pd.factorize(self.df['Name'])
         item_index = names.get_indexer([name])[0]
         if item_index == -1:
@@ -50,9 +51,9 @@ class Lookup:
                     category=item_as_list[2])
 
     def append_item(self, item: Item) -> None:
-        item = [item.name, item.mean_price, item.category]
-        thing_to_save = pd.DataFrame(item)
-        thing_to_save.to_csv(self.path, mode='a', header=False, index=False)
+        itm = [item.name, item.mean_price, item.category]
+        thing_to_save = pd.DataFrame(itm)
+        thing_to_save.transpose().to_csv(self.path, mode='a', header=False, index=False, sep=',')
         self.df = pd.read_csv(self.path)
         logging.debug(f"Appended Item: {item}")
 
@@ -61,19 +62,19 @@ class Lookup:
         a = input("Podaj nazwę: ")
         b = -1  # TODO obsługa mean_price
         c = input("Podaj kategorię: ")
-        self.category_query(c)
 
         new_item = Item(name=a, mean_price=b, category=c)
         self.append_item(new_item)
+        self.df = pd.read_csv(self.path)
         logging.info(f"Created new Item: {new_item}")
 
-    def category_query(self, query: str) -> None:
-        query = query.lower().capitalize()
-        if query not in self.category_list:
-            self.create_category(query)
-
-    def create_category(self, name: str) -> None:
-        if any(char in "!@#$%^&*()" for char in name):
-            raise ValueError("Unallowed characters in category name")
-        self.category_list.append(name.lower().capitalize())
-        logging.info(f"Created new category: {name.lower().capitalize()}")
+    # def category_query(self, query: str) -> None:
+    #     query = query.lower().capitalize()
+    #     if query not in self.category_list:
+    #         self.create_category(query)
+    #
+    # def create_category(self, name: str) -> None:
+    #     if any(char in "!@#$%^&*()" for char in name):
+    #         raise ValueError("Unallowed characters in category name")
+    #     self.category_list.append(name.lower().capitalize())
+    #     logging.info(f"Created new category: {name.lower().capitalize()}")

@@ -18,6 +18,7 @@ class Window(tkinter.Toplevel):
 
         w, h = master.winfo_screenwidth(), master.winfo_screenheight()
 
+        self.master = master
         self.overrideredirect(True)
         self.geometry(f'{int(w/2)}x{int(h/2)}+100+100')
         self.config(background='#121212')
@@ -58,6 +59,7 @@ class Window(tkinter.Toplevel):
 class Title_bar(tkinter.Frame):
     def __init__(self, master):
         super().__init__(master)
+        self.master = master
         self.startY = None
         self.startX = None
         self['bg'] = 'black'
@@ -74,6 +76,7 @@ class Title_bar(tkinter.Frame):
         x = event.x_root + self.startX
         y = event.y_root + self.startY
         self.master.geometry(f'+{x}+{y}')
+        self.update()
 
 
 class Button(tkinter.Button):
