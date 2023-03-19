@@ -11,6 +11,24 @@ class Root(tkinter.Tk):
         self.iconbitmap(default="resources/icon.ico")
         self.attributes('-alpha', 0.0)
 
+        self.bind("<Unmap>", self.childrenIconify)
+        self.bind("<Map>", self.childrenDeiconify)
+        self.bind("<FocusIn>", self.childrenLift)
+
+    def childrenIconify(self, event):
+        for child in self.winfo_children():
+            if isinstance(child, Window):
+                child.withdraw()
+
+    def childrenDeiconify(self, event):
+        for child in self.winfo_children():
+            if isinstance(child, Window):
+                child.deiconify()
+
+    def childrenLift(self, event):
+        for child in self.winfo_children():
+            child.lift()
+
 
 class Window(tkinter.Toplevel):
     def __init__(self, master):
@@ -19,30 +37,15 @@ class Window(tkinter.Toplevel):
         w, h = master.winfo_screenwidth(), master.winfo_screenheight()
 
         self.master = master
-        self.overrideredirect(True)
-        self.geometry(f'{int(w/2)}x{int(h/2)}+100+100')
+        super().overrideredirect(True)
+        super().geometry(f'{int(w/2)}x{int(h/2)}+100+100')
         self.config(background='#121212')
         self.title("Budget manager")
         self.iconbitmap(default="resources/icon.ico")
         self.ikona = ImageTk.PhotoImage(Image.open('resources/icon.png').resize((17, 17)))
         self.update()
-
-        # toplevel follows root taskbar events (minimize, restore)
-        master.bind("<Unmap>", self.onRootIconify)
-        master.bind("<Map>", self.onRootDeiconify)
-        master.bind("<FocusIn>", self.onRootLift)
-
-    def onRootIconify(self, event):
-        for child in self.master.winfo_children():
-            child.withdraw()
-
-    def onRootDeiconify(self, event):
-        for child in self.master.winfo_children():
-            child.deiconify()
-
-    def onRootLift(self, event):
-        for child in self.master.winfo_children():
-            child.lift()
+        self._offsetx = 0
+        self._offsety = 0
 
     def resize(self, event):
         w = event.width - self.winfo_width()
@@ -55,6 +58,15 @@ class Window(tkinter.Toplevel):
         else:
             self.state('zoomed')
 
+    def dragClick(self, event):
+        self._offsetx = super().winfo_pointerx() - super().winfo_rootx()
+        self._offsety = super().winfo_pointery() - super().winfo_rooty()
+
+    def drag_motion(self, event):
+        x = super().winfo_pointerx() - self._offsetx
+        y = super().winfo_pointery() - self._offsety
+        super().geometry(f"+{x}+{y}")
+
 
 class Title_bar(tkinter.Frame):
     def __init__(self, master):
@@ -65,18 +77,8 @@ class Title_bar(tkinter.Frame):
         self['bg'] = 'black'
         self['height'] = 30
 
-        self.bind('<Button-1>', self.drag_start)
-        self.bind('<B1-Motion>', self.drag_motion)
-
-    def drag_start(self, event):
-        self.startX = self.master.winfo_x() - event.x_root
-        self.startY = self.master.winfo_y() - event.y_root
-
-    def drag_motion(self, event):
-        x = event.x_root + self.startX
-        y = event.y_root + self.startY
-        self.master.geometry(f'+{x}+{y}')
-        self.update()
+        self.bind('<Button-1>', self.master.dragClick)
+        self.bind('<B1-Motion>', self.master.drag_motion)
 
 
 class Button(tkinter.Button):
