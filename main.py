@@ -2,9 +2,7 @@ import datetime
 import logging
 import tkinter
 from tkinter import ttk
-
 import pandas
-
 import classes.gui as gui
 from classes.databases import Lookup, Purchase_base
 from classes.dataclasses import Purchase
@@ -92,9 +90,8 @@ def GUI():
     root = gui.Root()
     main_window = gui.Window(root)
     init_func_frame(main_window, root)
-    container = tkinter.Label(main_window, bg='#121212')
 
-    navigation = tkinter.Label(container, bg='#333333', width=12)
+    navigation = tkinter.Label(main_window, bg='#333333', width=12)
     navigation_buttons = [home := gui.Button(navigation, "#333333", height=2, text="Strona główna"),
                           data_list := gui.Button(navigation, "#333333", height=2, text="Wyświetl bazę danych"),
                           graphs := gui.Button(navigation, "#333333", height=2, text="Pokaż wykresy"),
@@ -102,12 +99,11 @@ def GUI():
     for button in navigation_buttons:
         button.pack(side='top', fill='x')
 
-    content = tkinter.Label(container, bg='#222222')
+    content = tkinter.Label(main_window, bg='#222222')
     content.state = "home"
 
     navigation.pack(side='left', fill='y')
     content.pack(fill='both', expand=100)
-    container.pack(fill='both', expand=999)
     root.mainloop()
 
 
@@ -129,11 +125,31 @@ def create_plots():
     root.mainloop()
 
 
-def main():
+def logging_innit():
+    logging.basicConfig(level=logging.DEBUG,
+                        filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
-    # logging.basicConfig(level=logging.DEBUG,
-    #                     filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
-    create_plots()
+
+def test():
+
+    root = tkinter.Tk()
+
+    pasek = tkinter.Label(root, bg='black')
+    przycisk1 = tkinter.Label(root, width=20, height=5, bg='blue')
+    przycisk2 = tkinter.Label(root, width=20, height=5, bg='red')
+    content = tkinter.Label(root, width=20, height=20, bg='white')
+    content_child = tkinter.Label(content, width=20, height=20, bg='gray')
+
+    pasek.pack(anchor='n', fill='x')
+    przycisk1.pack(anchor='nw', side='left', fill='none')
+    przycisk2.pack(anchor='nw', side='left', fill='none')
+    content.pack(anchor='ne', expand=True, fill='both')
+    content_child.pack()
+    root.mainloop()
+
+
+def main():
+    GUI()
 
 
 if __name__ == '__main__':
