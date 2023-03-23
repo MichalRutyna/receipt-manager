@@ -104,25 +104,33 @@ def GUI():
 
     navigation.pack(side='left', fill='y')
     content.pack(fill='both', expand=100)
+    create_plots(main_window)
     root.mainloop()
 
 
-def create_plots():
-    root = tkinter.Tk()
+def create_plots(master):
     baza_przedmiotow = Lookup('data/lookup.csv')
     baza_zakupow = Purchase_base('data/data.csv')
-    data2 = {'year': [1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010],
-             'unemployment_rate': [9.8, 12, 8, 7.2, 6.9, 7, 6.5, 6.2, 5.5, 6.3]
+    data1 = {'country': ['A', 'B', 'C', 'D', 'E'],
+             'gdp_per_capita': [45000, 42000, 52000, 49000, 47000]
              }
-    df2 = pandas.DataFrame(data2)
+    df1 = pandas.DataFrame(data1)
 
     figure2 = plt.Figure(figsize=(5, 4), dpi=100)
     ax2 = figure2.add_subplot(111)
-    line = FigureCanvasTkAgg(figure2, root)
-    line.get_tk_widget().pack(side='left', fill='both')
-    df2 = baza_przedmiotow.df["Median_price"]
-    print(df2)
-    root.mainloop()
+
+    widget = FigureCanvasTkAgg(figure2, master)
+    widget.get_tk_widget().pack()
+
+    ax2.pie(baza_przedmiotow.df["Median_price"])
+
+    # figure1 = plt.Figure(figsize=(6, 5), dpi=100)
+    # ax1 = figure1.add_subplot(111)
+    # bar1 = FigureCanvasTkAgg(figure1, master)
+    # bar1.get_tk_widget().pack(side='left', fill='both')
+    # df1 = df1[['country', 'gdp_per_capita']].groupby('country').sum()
+    # df1.plot(kind='bar', legend=True, ax=ax1)
+    # ax1.set_title('Country Vs. GDP Per Capita')
 
 
 def logging_innit():
