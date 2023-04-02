@@ -68,22 +68,17 @@ def init_func_frame(master: gui.Window, root):
     title_bar = gui.Title_bar(master)
     title_bar.pack(side='top', fill='x')
 
-    title = tkinter.Label(title_bar, image=master.ikona, text=master.wm_title(), fg='gray', bg='black', padx='5px', compound='left')
-    close_button = gui.Button(title_bar, "#FF0000", text=chr(0x72), font='Marlett', width=5, bg='black', borderwidth=0,
-                              command=lambda: root.destroy(), )
-    maximize_button = gui.Button(title_bar, "#FF0000", text=chr(0x32), font='Marlett', width=3, bg='black', borderwidth=0,
-                                 command=lambda: master.malize())
-    inconify_button = gui.Button(title_bar, "#FF0000", text=chr(0x30), font='Marlett', width=3, bg='black', borderwidth=0,
-                                 command=lambda: root.iconify())
+    title = tkinter.Label(title_bar, image=master.ikona, text=master.wm_title(), fg='white', bg=title_bar['bg'], padx='5px', compound='left')
+    close_button = gui.Button(title_bar, "#FF0000", text=chr(0x72), font='Marlett', fg='#CCCCCC', width=5,
+                              bg=title_bar['bg'], borderwidth=0, command=lambda: root.destroy(), )
+    maximize_button = gui.Button(title_bar, "#555555", text=chr(0x32), font='Marlett', fg='#CCCCCC', width=3,
+                                 bg=title_bar['bg'], borderwidth=0, command=lambda: master.malize())
+    inconify_button = gui.Button(title_bar, "#555555", text=chr(0x30), font='Marlett', fg='#CCCCCC', width=3,
+                                 bg=title_bar['bg'], borderwidth=0, command=lambda: root.iconify())
     title.pack(side='left')
     close_button.pack(side='right')
     maximize_button.pack(side='right')
     inconify_button.pack(side='right')
-
-    style = ttk.Style()
-    style.configure("Grip.TSizegrip", background="#121212")
-    grip = ttk.Sizegrip(master, style="Grip.TSizegrip")
-    grip.place(relx=1.0, rely=1.0, anchor="se")
 
 
 def GUI():
@@ -102,6 +97,14 @@ def GUI():
     content = tkinter.Label(main_window, bg='#222222')
     content.state = "home"
 
+    quick_acces = tkinter.Label(main_window, bg='#333333', width=3)
+
+    style = ttk.Style()
+    style.configure("Grip.TSizegrip", background=quick_acces['bg'])
+    grip = ttk.Sizegrip(quick_acces, style="Grip.TSizegrip")
+    grip.place(relx=1.0, rely=1.0, anchor="se")
+
+    quick_acces.pack(side='right', fill='y')
     navigation.pack(side='left', fill='y')
     content.pack(fill='both', expand=100)
     create_plots(main_window)
