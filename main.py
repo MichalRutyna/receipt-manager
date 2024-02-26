@@ -1,8 +1,8 @@
 import datetime
 import logging
-import tkinter
-from classes.shopping_databases import Lookup, Purchase_base
-from classes.shopping_dataclasses import Purchase
+from shopping_databases import Lookup, Purchase_base
+from shopping_dataclasses import Purchase
+from database import Database
 
 import gui
 
@@ -64,13 +64,21 @@ def logging_innit():
     logging.basicConfig(level=logging.DEBUG,
                         filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
+import sqlite3 as sql
+def create_database() -> None:
+    db = sql.connect("test.db")
+    cu = db.cursor()
+    cu.execute("create table test (id INTEGER PRIMARY KEY, name TEXT, price DOUBLE)")
+
+    db.close()
 
 def test():
-    pass
+    with Database("test") as db:
+        db.create_empty_database()
 
 def main():
     gui.GUI()
 
 
 if __name__ == '__main__':
-    main()
+    test()
