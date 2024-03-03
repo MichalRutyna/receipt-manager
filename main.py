@@ -67,11 +67,13 @@ def logging_innit():
 
 def test():
     with Database("test") as db:
-        db.create_empty_database()
+        db.select_item_list(sort_by="sddsd", descending=True)
+
 
 def main():
     gui.GUI()
 
 
 if __name__ == '__main__':
-    main()
+    logging_innit()
+    test()
