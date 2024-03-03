@@ -1,7 +1,8 @@
 import logging
-import pandas as pd
 from typing import List, Optional
-from classes.shopping_dataclasses import Item, Purchase
+
+import pandas as pd
+from src.building_classes.shopping_dataclasses_depreciated import Item, Purchase
 
 
 class Purchase_base:

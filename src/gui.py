@@ -5,25 +5,54 @@ import pandas
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-import gui_parts as gui
-from shopping_databases import Lookup, Purchase_base
+import src.building_classes.gui_parts as gui
+from src.building_classes.shopping_databases_depreciated import *
 
-from typing import Dict
+from typing import Dict, Tuple
 
 
-def create_scenes(content_label) -> Dict[str, tkinter.Label]:
+def GUI():
+    root = gui.Root()
+    main_window = gui.Window(root)
+    window_functionality(main_window, root)
+    content_label = base_gui(main_window)
+    create_plots(content_label)
+    root.mainloop()
+
+
+def create_scenes(content_label: tkinter.Label) -> Tuple[Dict[str, tkinter.Label], Dict[str, str]]:
+    """
+    content_label: master of scene labels
+
+    returns:
+    - dict containing scene labels indexed by id
+    - dict containing scene full names indexed by id
+
+
+    Adding an item here will NOT create a new scene
+    """
     scenes = {"home": tkinter.Label(content_label, bg='red'),
               "database": tkinter.Label(content_label, bg='blue'),
               "plots": tkinter.Label(content_label, bg='green'),
               "new purchase": tkinter.Label(content_label, bg='yellow')}
-    return scenes
+
+    scene_names = {"home": "Strona główna",
+                   "database": "Baza danych",
+                   "plots": "Wykresy",
+                   "new purchase": "Nowy zakup"}
+
+    return scenes, scene_names
 
 
 def window_functionality(master: gui.Window, root) -> None:
+    """
+    Adds a title bar to a window containing window control buttons
+    """
     title_bar = gui.Title_bar(master)
     title_bar.pack(side='top', fill='x')
 
-    title = tkinter.Label(title_bar, image=master.ikona, text=master.wm_title(), fg='white', bg=title_bar['bg'], padx='5px', compound='left')
+    title = tkinter.Label(title_bar, image=master.ikona, text=master.wm_title(), fg='white', bg=title_bar['bg'],
+                          padx='5px', compound='left')
     close_button = gui.Button(title_bar, "#FF0000", text=chr(0x72), font='Marlett', fg='#CCCCCC', width=5,
                               bg=title_bar['bg'], borderwidth=0, command=lambda: root.destroy(), )
     maximize_button = gui.Button(title_bar, "#555555", text=chr(0x32), font='Marlett', fg='#CCCCCC', width=3,
@@ -37,11 +66,20 @@ def window_functionality(master: gui.Window, root) -> None:
 
 
 def base_gui(master: gui.Window) -> tkinter.Label:
-    # easy place to add scenes
-    scene_dict = {"home": "Strona główna",
-                  "database": "Baza danych",
-                  "plots": "Wykresy",
-                  "new purchase": "Nowy zakup"}
+    """
+    Creates the skeleton of the GUI
+    """
+
+    # small strip on the right
+    quick_acces = tkinter.Label(master, bg='#333000', width=3)
+
+    # main navigation on the left
+    navigation = tkinter.Label(master, bg='#333333', width=12)
+
+    # main content
+    content = tkinter.Label(master, bg='#222222')
+    content.state = "home"
+    scenes, scene_names = create_scenes(content)
 
     def change_scene(scene_id):
         if content.state != scene_id:
@@ -50,17 +88,11 @@ def base_gui(master: gui.Window) -> tkinter.Label:
             scenes[scene_id].pack(expand=True, fill='both')
             content.state = scene_id
 
-    quick_acces = tkinter.Label(master, bg='#333333', width=3)
-    navigation = tkinter.Label(master, bg='#333333', width=12)
-
-    # create and pack buttons from scene_dict for easy scene addition
-    for sceneId, sceneName in scene_dict.items():
-        gui.Button(navigation, "#333333", height=2, text=sceneName,
-                   command=lambda sceneId = sceneId: change_scene(sceneId)).pack(side='top', fill='x')
-
-    content = tkinter.Label(master, bg='#222222')
-    content.state = "home"
-    scenes = create_scenes(content)
+    for sceneId, sceneName in scene_names.items():
+        print(sceneId)
+        (gui.Button(navigation, "#333333", height=2, text=sceneName,
+                   command=lambda new_scene=sceneId: change_scene(new_scene))
+         .pack(side='top', fill='x'))
 
     style = ttk.Style()
     style.configure("Grip.TSizegrip", background=quick_acces['bg'])
@@ -74,16 +106,8 @@ def base_gui(master: gui.Window) -> tkinter.Label:
     return content
 
 
-def GUI():
-    root = gui.Root()
-    main_window = gui.Window(root)
-    window_functionality(main_window, root)
-    content_label = base_gui(main_window)
-    create_plots(content_label)
-    root.mainloop()
-
-
 def create_plots(master):
+    """Temporary function"""
     baza_przedmiotow = Lookup('data/lookup.csv')
     baza_zakupow = Purchase_base('data/data.csv')
     data1 = {'country': ['A', 'B', 'C', 'D', 'E'],

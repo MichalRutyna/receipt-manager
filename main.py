@@ -1,10 +1,10 @@
 import datetime
 import logging
-from shopping_databases import Lookup, Purchase_base
-from shopping_dataclasses import Purchase
-from database import Database
 
-import gui
+import src.gui as gui
+from src.building_classes.shopping_databases_depreciated import Lookup, Purchase_base
+from src.building_classes.shopping_dataclasses_depreciated import Purchase
+from src.database import Database
 
 
 def console_ui():
@@ -64,13 +64,6 @@ def logging_innit():
     logging.basicConfig(level=logging.DEBUG,
                         filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
-import sqlite3 as sql
-def create_database() -> None:
-    db = sql.connect("test.db")
-    cu = db.cursor()
-    cu.execute("create table test (id INTEGER PRIMARY KEY, name TEXT, price DOUBLE)")
-
-    db.close()
 
 def test():
     with Database("test") as db:
@@ -81,4 +74,4 @@ def main():
 
 
 if __name__ == '__main__':
-    test()
+    main()

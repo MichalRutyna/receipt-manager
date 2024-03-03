@@ -20,4 +20,4 @@ class Database:
         self.database.close()
 
     def create_empty_database(self) -> None:
-        self.cursor.execute('create table test4 (id INTEGER PRIMARY KEY, name TEXT, price DOUBLE)')
+        self.cursor.execute('create table test (id INTEGER PRIMARY KEY, name TEXT, price DOUBLE)')
