@@ -2,6 +2,7 @@ import base64
 import datetime
 import logging
 import os
+import requests
 
 import src.gui as gui
 from src.building_classes.shopping_databases_depreciated import Lookup, Purchase_base
@@ -73,7 +74,6 @@ def test():
 
 
 def test_api():
-    import requests
     import json
     import string
 
@@ -104,20 +104,31 @@ def test_api():
 
     _refresh_token = response["refresh_token"]
     _access_token = response["access_token"]
-    _get_recepits(_access_token)
+    payload = _get_default_headers(_access_token)
+    _get_tickets(payload)
 
 
-def _get_recepits(token):
-    import requests
+def _get_default_headers(token):
+    return {'Authorization': f'Bearer {token}',
+            'App-Version': '999.99.9',
+            'Operating-System': 'ipl',
+            'App': 'com.lidl.eci.lidl.plus',
+            "Accept-Language": "pl"}
 
-    headers = {'Authorization': f'Bearer {token}',
-               'App-Version': '999.99.9',
-               'Operating-System': 'iOS',
-               'App': 'com.lidl.eci.lidl.plus'}
 
-    response = requests.get("https://tickets.lidlplus.com/api/v1/NL/list/1", headers=headers)
-    print(response)
+def _get_coupons(load):
+    response = requests.get("https://coupons.lidlplus.com/api/v2/PL", headers=load).json()
+    for coupon in response["sections"][1]["coupons"]:
+        print(coupon['title'])
 
+
+def _get_tickets(load):
+    tickets = requests.get("https://tickets.lidlplus.com/api/v2/PL/tickets", headers=load).json()
+    sum = 0
+    for ticket in tickets["tickets"]:
+        sum += ticket["totalAmount"]
+
+    print(sum)
 
 def main():
     gui.GUI()
