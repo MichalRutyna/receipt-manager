@@ -79,5 +79,5 @@ def main():
 
 if __name__ == '__main__':
     logging_innit()
-    import api
+    import src.api as api
     api.test_ticket()
