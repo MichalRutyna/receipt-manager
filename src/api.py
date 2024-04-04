@@ -1,6 +1,7 @@
 import base64
 import json
 import requests
+import pickle
 
 from typing import Dict, Any
 
@@ -36,7 +37,10 @@ class LidlAPI:
         payload = self._get_default_headers()
         tickets = requests.get("https://tickets.lidlplus.com/api/v2/PL/tickets",
                                headers=payload)
-        return tickets.json()
+
+        tickets = tickets.json()
+
+        return tickets
 
     def _get_ticket(self, ticket_id) -> Dict[str, str | int | float | bool | None]:
         """
@@ -46,12 +50,6 @@ class LidlAPI:
         ticket = requests.get(f"https://tickets.lidlplus.com/api/v2/PL/tickets/{ticket_id}",
                               headers=payload)
         ticket = ticket.json()
-
-        import pickle
-        with open("data/test_ticket", "w", encoding="utf-8") as file:
-            file.write(str(ticket))
-        with open("data/test_ticket.pkl", "wb") as f:
-            pickle.dump(ticket, f)
 
         return ticket
 
@@ -91,7 +89,6 @@ def refresh_token() -> str:
 
 
 def test_ticket():
-    import pickle
     with open("data/test_ticket.pkl", "rb") as f:
         ticket = pickle.load(f)
 

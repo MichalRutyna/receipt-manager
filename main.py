@@ -80,4 +80,6 @@ def main():
 if __name__ == '__main__':
     logging_innit()
     import src.api as api
-    api.test_ticket()
+    source = api.LidlAPI()
+    source._get_tickets()
+
