@@ -2,13 +2,13 @@ import logging
 import sqlite3
 
 
-class Database:
+class StoreDatabase:
     """
     Interface for interacting with the database made into a class because the user can switch databases
     This class is the owner of the reference to the sqlite database
 
     The proper use of the database is with python's context manager:
-    with Database("name") as db:
+    with StoreDatabase("name") as db:
         db.foo()
     """
 

@@ -7,7 +7,7 @@ import requests
 import src.gui as gui
 from src.building_classes.shopping_databases_depreciated import Lookup, Purchase_base
 from src.building_classes.shopping_dataclasses_depreciated import Purchase
-from src.database import Database
+from src.store_database import StoreDatabase
 
 
 def console_ui():
@@ -69,7 +69,7 @@ def logging_innit():
 
 
 def test():
-    with Database("test") as db:
+    with StoreDatabase("test") as db:
         db.select_item_list(sort_by="sddsd", descending=True)
 
 
@@ -80,6 +80,14 @@ def main():
 if __name__ == '__main__':
     logging_innit()
     import src.api as api
+    import src.api_to_database as db_integration
+    from src.store_database import StoreDatabase
+
     source = api.LidlAPI()
-    source._get_tickets()
+    # source.get_tickets()
+    main_db = 'test'
+
+    db_integration.update_into_database(source, main_db)
+
+
 
