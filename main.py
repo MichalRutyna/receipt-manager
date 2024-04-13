@@ -86,8 +86,9 @@ if __name__ == '__main__':
     source = api.LidlAPI()
     # source.get_tickets()
     main_db = 'test'
+    #source.get_ticket_page(289)
 
-    db_integration.update_into_database(source, main_db)
+    db_integration.fill_missing_data(source, main_db)
 
 
 

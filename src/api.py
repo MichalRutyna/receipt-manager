@@ -1,5 +1,7 @@
 import base64
 import json
+import logging
+
 import requests
 import pickle
 
@@ -30,26 +32,37 @@ class LidlAPI:
         for coupon in response["sections"][1]["coupons"]:
             print(coupon['title'])
 
-    def get_tickets(self, page) -> dict[str, str | int | float | bool | list[dict] | None]:
+    def get_ticket_page(self, page) -> dict[str, str | int | float | bool | list[dict] | None]:
         """
         Returns a dict representation of a list of tickets
         """
+        logging.log(logging.INFO, f"Requested ticket page {page}")
         payload = self._get_default_headers()
         tickets = requests.get(f"https://tickets.lidlplus.com/api/v2/PL/tickets?pageNumber={page}",
                                headers=payload)
 
-        tickets = tickets.json()
-
+        if tickets.status_code == 200:
+            tickets = tickets.json()
+        else:
+            logging.log(logging.WARNING, f"Failed to retrieve ticket page {page}, status code {tickets.status_code}")
+            tickets = None
         return tickets
 
-    def get_ticket(self, ticket_id) -> dict[str, str | int | float | bool | list[dict] | None]:
+    def get_ticket(self, ticket_id) -> (dict[str, str | int | float | bool |
+                                                  list[dict[str, str | list[dict[str, str]]]] | None]
+                                        | None):
         """
         Returns a dict representation of the requested ticket
         """
+        logging.log(logging.INFO, f"Requested ticket {ticket_id}")
         payload = self._get_default_headers()
         ticket = requests.get(f"https://tickets.lidlplus.com/api/v2/PL/tickets/{ticket_id}",
                               headers=payload)
-        ticket = ticket.json()
+        if ticket.status_code == 200:
+            ticket = ticket.json()
+        else:
+            logging.log(logging.WARNING, f"Failed to retrieve ticket {ticket_id}, status code {ticket.status_code}")
+            ticket = None
 
         return ticket
 
@@ -61,6 +74,7 @@ def refresh_token() -> str:
     """
     # TODO encryption
     # TODO checking expiration
+    logging.log(logging.INFO, f"Requested token refreshment")
     try:
         with open("data/token", 'r') as saved_token:
             lidl_data = json.loads(saved_token.read())
@@ -98,5 +112,3 @@ def test_ticket():
     with StoreDatabase("test") as db:
         db.cursor.execute("SELECT * FROM PRAGMA_TABLE_LIST()")
         print(db.cursor.fetchall())
-
-
