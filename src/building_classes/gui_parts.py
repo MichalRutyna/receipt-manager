@@ -38,7 +38,7 @@ class Window(tkinter.Toplevel):
 
         self.master = master
         super().overrideredirect(True)
-        super().geometry(f'{int(w/2)}x{int(h/2)}+100+100')
+        super().geometry(f'{int(w/1.35)}x{int(h/1.6)}+100+100')
         self.config(background='#121212')
         self.title("Budget manager")
         self.iconbitmap(default="resources/icon.ico")
@@ -74,7 +74,7 @@ class Title_bar(tkinter.Frame):
         self.master = master
         self.startY = None
         self.startX = None
-        self['bg'] = 'black'
+        self['bg'] = '#424242'
         self['height'] = 30
 
         self.bind('<Button-1>', self.master.dragClick)
