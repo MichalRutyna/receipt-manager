@@ -14,9 +14,8 @@ from typing import Dict, Tuple
 def GUI():
     root = gui.Root()
     main_window = gui.Window(root)
-    window_functionality(main_window, root)
+    create_window_functionality(main_window, root)
     content_label = base_gui(main_window)
-    create_plots(content_label)
     root.mainloop()
 
 
@@ -44,7 +43,7 @@ def create_scenes(content_label: tkinter.Label) -> Tuple[Dict[str, tkinter.Label
     return scenes, scene_names
 
 
-def window_functionality(master: gui.Window, root) -> None:
+def create_window_functionality(master: gui.Window, root) -> None:
     """
     Adds a title bar to a window containing window control buttons
     """
@@ -68,6 +67,7 @@ def window_functionality(master: gui.Window, root) -> None:
 def base_gui(master: gui.Window) -> tkinter.Label:
     """
     Creates the skeleton of the GUI
+    @returns content label
     """
 
     # small strip on the right

@@ -7,7 +7,8 @@ import sqlite3
 import json
 
 
-def process_ticket_page(source: LidlAPI, target: str, page: int, force_ticket_processing: bool = False) -> Iterable[str] | None:
+def process_ticket_page(source: LidlAPI, target: str, page: int, force_ticket_processing: bool = False)\
+        -> Iterable[str] | None:
     """
     Inserts all tickets into the database
     Target is the name of the target database
@@ -29,19 +30,20 @@ def process_ticket_page(source: LidlAPI, target: str, page: int, force_ticket_pr
     with StoreDatabase(target) as db:
         db.cursor.execute("BEGIN TRANSACTION")
         for ticket in ticket_list:
-            ticket_id: int = int(ticket['id'])
+            ticket_id: str = str(ticket['id'])
             date: str = str(ticket['date'])
             total: float = float(ticket['totalAmount'])
             fav = 1 if ticket['isFavorite'] else 0
 
             try:
-                db.cursor.execute(f"SELECT 1 FROM tickets WHERE ticket_id = '{ticket_id}'")
+                db.cursor.execute(f"SELECT 1 FROM tickets WHERE ticket_id = ?", [ticket_id])
                 # Only process new a ticket if it doesn't exist already
                 if db.cursor.fetchone() is None or force_ticket_processing:
                     db.cursor.execute("INSERT INTO tickets (ticket_id, date, total, total_discount, isFavourite) "
-                                      f"VALUES ('{ticket_id}', '{date}', {total}, 0, {fav})")
+                                      f"VALUES (?, ?, ?, 0, ?)", [ticket_id, date, total, fav])
                     empty_tickets.append(f'{ticket_id}')
             except sqlite3.IntegrityError as e:
+                logging.error("IntegrityError occurred during creation of a new ticket")
                 logging.error(e)
                 if force_ticket_processing:
                     empty_tickets.append(f'{ticket_id}')
@@ -67,21 +69,22 @@ def process_ticket(source: LidlAPI, target: str, ticket_id: str) -> None:
         for item in ticket['itemsLine']:
             # creating a store_item if it doesn't already exist
             try:
-                code_input = item['codeInput']
-                name = item['name']
+                code_input: str = str(item['codeInput'])
+                name: str = str(item['name'])
 
-                db.cursor.execute(f"SELECT 1 FROM store_items WHERE store_item_id = '{code_input}'")
+                db.cursor.execute(f"SELECT 1 FROM store_items WHERE store_item_id = ?", [code_input])
                 # Only create new store_item if it doesn't exist already
                 if db.cursor.fetchone() is None:
                     db.cursor.execute("INSERT INTO store_items (store_item_id, store_name) "
-                                      "VALUES (?, ?)", [code_input, name]) # TODO BINDOWANIE ZAMIAST DOPISYWANIAAAAAAAAAA
+                                      "VALUES (?, ?)", [code_input, name])
                     logging.log(logging.INFO, f'Created new store item: {name}')
             except sqlite3.IntegrityError as e:
+                logging.error("IntegrityError occurred during creation of a new store_item")
                 logging.error(e)
             except Exception as e:
                 logging.error(e)
-                logging.error("INSERT INTO store_items (store_item_id, store_name) "
-                                      f"VALUES ('{code_input}', '{name}')")
+                logging.error("Error occured during execution of INSERT INTO store_items (store_item_id, store_name) "
+                              f"VALUES (?, ?)", [code_input, name])
                 raise
 
             # inserting purchase instance
@@ -95,16 +98,19 @@ def process_ticket(source: LidlAPI, target: str, ticket_id: str) -> None:
 
                 db.cursor.execute(
                     f"INSERT INTO purchase_instances (quantity, unit_price, discounts, ticket_id, store_item_id) "
-                    f"VALUES ({quantity}, {unit_price}, {discount_amount}, '{ticket_id}', '{store_item_id}')"
+                    f"VALUES (?, ?, ?, ?, ?)",
+                    [quantity, unit_price, discount_amount, ticket_id, store_item_id]
                 )
 
                 db.cursor.execute(
                     f"UPDATE store_items SET total_amount = total_amount + {quantity},"
-                    f" total_spent = total_spent + round({quantity * unit_price}, 2) WHERE store_item_id='{store_item_id}'"
+                    f" total_spent = total_spent + round({quantity * unit_price}, 2) WHERE store_item_id=?",
+                    [store_item_id]
                 )
 
                 db.cursor.execute(
-                    f"UPDATE tickets SET total_discount = total_discount + {discount_amount} WHERE ticket_id='{ticket_id}'"
+                    f"UPDATE tickets SET total_discount = total_discount + {discount_amount} WHERE ticket_id=?",
+                    [ticket_id]
                 )
 
                 db.cursor.execute("SELECT MAX(instance_id) FROM purchase_instances")
@@ -112,7 +118,7 @@ def process_ticket(source: LidlAPI, target: str, ticket_id: str) -> None:
 
             except sqlite3.IntegrityError as e:
                 logging.error(e)
-                logging.error(f"The above error was encounter during handling an item: {store_item_id},"
+                logging.error(f"The above error was encounter during inserting a purchase instance: {store_item_id},"
                               f" in the ticket {ticket_id}")
 
         db.cursor.execute("COMMIT TRANSACTION")
@@ -124,7 +130,6 @@ def update_into_database(source: LidlAPI, target) -> None:
     """
     # TODO only update new stuff
     process_ticket_page(source, target, 1)
-
 
 
 def fill_missing_data(source: LidlAPI, target) -> None:
@@ -164,8 +169,9 @@ def fill_missing_data(source: LidlAPI, target) -> None:
             quantity, unit_price, store_item_id = instance
             try:
                 db.cursor.execute(
-                    f"UPDATE store_items SET total_amount = total_amount + {quantity},"
-                    f" total_spent = total_spent + round({quantity * unit_price}, 2) WHERE store_item_id='{store_item_id}'"
+                    f"UPDATE store_items SET total_amount = total_amount + ?,"
+                    f" total_spent = total_spent + round(?, 2) WHERE store_item_id=?",
+                    [quantity, quantity * unit_price, store_item_id]
                 )
             except sqlite3.IntegrityError as e:
                 logging.error(e)

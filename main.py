@@ -74,21 +74,22 @@ def test():
 
 
 def main():
-    gui.GUI()
-
-
-if __name__ == '__main__':
-    logging_innit()
     import src.api as api
     import src.api_to_database as db_integration
     from src.store_database import StoreDatabase
 
     source = api.LidlAPI()
-    # source.get_tickets()
     main_db = 'test'
-    #source.get_ticket_page(289)
 
-    db_integration.fill_missing_data(source, main_db)
+    db_integration.update_into_database(source, main_db)
+    gui.GUI()
+
+
+if __name__ == '__main__':
+    logging_innit()
+    main()
+
+
 
 
 
