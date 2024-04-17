@@ -1,6 +1,6 @@
 import logging
 
-from api import LidlAPI
+from api.main_api import LidlAPI
 from store_database import StoreDatabase
 from typing import Iterable, List
 import sqlite3
@@ -38,15 +38,15 @@ def process_ticket_page(source: LidlAPI, target: str, page: int, force_ticket_pr
             try:
                 db.cursor.execute(f"SELECT 1 FROM tickets WHERE ticket_id = ?", [ticket_id])
                 # Only process new a ticket if it doesn't exist already
-                if db.cursor.fetchone() is None or force_ticket_processing:
+                if db.cursor.fetchone() is None:
                     db.cursor.execute("INSERT INTO tickets (ticket_id, date, total, total_discount, isFavourite) "
                                       f"VALUES (?, ?, ?, 0, ?)", [ticket_id, date, total, fav])
+                    empty_tickets.append(f'{ticket_id}')
+                elif force_ticket_processing:
                     empty_tickets.append(f'{ticket_id}')
             except sqlite3.IntegrityError as e:
                 logging.error("IntegrityError occurred during creation of a new ticket")
                 logging.error(e)
-                if force_ticket_processing:
-                    empty_tickets.append(f'{ticket_id}')
 
         db.cursor.execute("COMMIT TRANSACTION")
 

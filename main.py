@@ -1,10 +1,8 @@
-import base64
 import datetime
 import logging
-import os
-import requests
+import gettext
 
-import src.gui as gui
+import gui.main_gui as gui
 from src.building_classes.shopping_databases_depreciated import Lookup, Purchase_base
 from src.building_classes.shopping_dataclasses_depreciated import Purchase
 from src.store_database import StoreDatabase
@@ -74,18 +72,23 @@ def test():
 
 
 def main():
-    import src.api as api
-    import src.api_to_database as db_integration
-    from src.store_database import StoreDatabase
+    import src.api.main_api as api
 
     source = api.LidlAPI()
     main_db = 'test'
 
-    db_integration.update_into_database(source, main_db)
+    #db_integration.update_into_database(source, main_db)
     gui.GUI()
 
 
 if __name__ == '__main__':
+    domain = 'receiptmanager'
+    localedir = './locales'
+    locale = 'pl'
+    en_i18n = gettext.translation(domain, localedir, fallback=True, languages=['en', 'pl'])
+    en_i18n.install()
+    print(_("Witaj world"))
+
     logging_innit()
     main()
 

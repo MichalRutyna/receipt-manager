@@ -1,11 +1,11 @@
-import tkinter
+import tkinter as tk
 from tkinter import ttk
 
 import pandas
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-import src.building_classes.gui_parts as gui
+import gui.gui_parts as gui
 from src.building_classes.shopping_databases_depreciated import *
 
 from typing import Dict, Tuple
@@ -19,7 +19,7 @@ def GUI():
     root.mainloop()
 
 
-def create_scenes(content_label: tkinter.Label) -> Tuple[Dict[str, tkinter.Label], Dict[str, str]]:
+def create_scenes(content_label: tk.Label) -> Tuple[Dict[str, tk.Label], Dict[str, str]]:
     """
     content_label: master of scene labels
 
@@ -30,10 +30,14 @@ def create_scenes(content_label: tkinter.Label) -> Tuple[Dict[str, tkinter.Label
 
     Adding an item here will NOT create a new scene
     """
-    scenes = {"home": tkinter.Label(content_label, bg='red'),
-              "database": tkinter.Label(content_label, bg='blue'),
-              "plots": tkinter.Label(content_label, bg='green'),
-              "new purchase": tkinter.Label(content_label, bg='yellow')}
+    from .data_view import create_database_scene
+    home = create_home_scene(content_label)
+    database = create_database_scene(content_label)
+
+    scenes = {"home": home,
+              "database": database,
+              "plots": tk.Label(content_label, bg='green'),
+              "new purchase": tk.Label(content_label, bg='yellow')}
 
     scene_names = {"home": "Strona główna",
                    "database": "Baza danych",
@@ -43,6 +47,12 @@ def create_scenes(content_label: tkinter.Label) -> Tuple[Dict[str, tkinter.Label
     return scenes, scene_names
 
 
+def create_home_scene(parent) -> tk.Label:
+    scene = tk.Label(parent, bg='red')
+
+    return scene
+
+
 def create_window_functionality(master: gui.Window, root) -> None:
     """
     Adds a title bar to a window containing window control buttons
@@ -50,7 +60,7 @@ def create_window_functionality(master: gui.Window, root) -> None:
     title_bar = gui.Title_bar(master)
     title_bar.pack(side='top', fill='x')
 
-    title = tkinter.Label(title_bar, image=master.ikona, text=master.wm_title(), fg='white', bg=title_bar['bg'],
+    title = tk.Label(title_bar, image=master.ikona, text=master.wm_title(), fg='white', bg=title_bar['bg'],
                           padx='5px', compound='left')
     close_button = gui.Button(title_bar, "#FF0000", text=chr(0x72), font='Marlett', fg='#CCCCCC', width=5,
                               bg=title_bar['bg'], borderwidth=0, command=lambda: root.destroy(), )
@@ -64,20 +74,20 @@ def create_window_functionality(master: gui.Window, root) -> None:
     inconify_button.pack(side='right')
 
 
-def base_gui(master: gui.Window) -> tkinter.Label:
+def base_gui(master: gui.Window) -> tk.Label:
     """
     Creates the skeleton of the GUI
     @returns content label
     """
 
     # small strip on the right
-    quick_acces = tkinter.Label(master, bg='#333000', width=3)
+    quick_acces = tk.Label(master, bg='#333000', width=3)
 
     # main navigation on the left
-    navigation = tkinter.Label(master, bg='#333333', width=12)
+    navigation = tk.Label(master, bg='#333333', width=12)
 
     # main content
-    content = tkinter.Label(master, bg='#222222')
+    content = tk.Label(master, bg='#222222')
     content.state = "home"
     scenes, scene_names = create_scenes(content)
 
@@ -85,7 +95,8 @@ def base_gui(master: gui.Window) -> tkinter.Label:
         if content.state != scene_id:
             for child in content.winfo_children():
                 child.pack_forget()
-            scenes[scene_id].pack(expand=True, fill='both')
+            new_scene = scenes[scene_id]
+            new_scene.pack(expand=True, fill='both')
             content.state = scene_id
 
     for sceneId, sceneName in scene_names.items():
