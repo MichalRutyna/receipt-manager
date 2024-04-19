@@ -67,8 +67,7 @@ def logging_innit():
 
 
 def test():
-    with StoreDatabase("test") as db:
-        db.select_item_list(sort_by="sddsd", descending=True)
+    pass
 
 
 def main():
@@ -78,7 +77,7 @@ def main():
     main_db = 'test'
 
     #db_integration.update_into_database(source, main_db)
-    gui.GUI()
+    gui.GUI(main_db)
 
 
 if __name__ == '__main__':

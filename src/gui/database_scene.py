@@ -5,7 +5,7 @@ from src.internal.database_model import POSSIBLE_TABLES
 from src.gui.data_view import DataView
 
 
-def create_database_scene(parent) -> tk.Label:
+def create_database_scene(parent: tk.Label, database: str) -> tk.Label:
     print(_("Witaj world"))
     scene = tk.Label(parent)
 
@@ -20,7 +20,9 @@ def create_database_scene(parent) -> tk.Label:
 
     # Model
     from src.internal.database_model import DataModel
-    data_model = DataModel(data_view)
+    data_model = DataModel(data_view, database)
+    from src.load_config import DEFAULT_TABLE
+    data_model.change_table(DEFAULT_TABLE)
 
     # Controller
     table_select.bind('<<ComboboxSelected>>', lambda event, table=selected_table: data_model.change_table(table))

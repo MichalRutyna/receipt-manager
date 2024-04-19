@@ -11,15 +11,15 @@ from src.building_classes.shopping_databases_depreciated import *
 from typing import Dict, Tuple
 
 
-def GUI():
+def GUI(database: str):
     root = gui.Root()
     main_window = gui.Window(root)
     create_window_functionality(main_window, root)
-    content_label = base_gui(main_window)
+    content_label = base_gui(main_window, database)
     root.mainloop()
 
 
-def create_scenes(content_label: tk.Label) -> Tuple[Dict[str, tk.Label], Dict[str, str]]:
+def create_scenes(content_label: tk.Label, database: str) -> Tuple[Dict[str, tk.Label], Dict[str, str]]:
     """
     content_label: master of scene labels
 
@@ -30,9 +30,9 @@ def create_scenes(content_label: tk.Label) -> Tuple[Dict[str, tk.Label], Dict[st
 
     Adding an item here will NOT create a new scene
     """
-    from .data_view import create_database_scene
+    from src.gui.database_scene import create_database_scene
     home = create_home_scene(content_label)
-    database = create_database_scene(content_label)
+    database = create_database_scene(content_label, database)
 
     scenes = {"home": home,
               "database": database,
@@ -74,7 +74,7 @@ def create_window_functionality(master: gui.Window, root) -> None:
     inconify_button.pack(side='right')
 
 
-def base_gui(master: gui.Window) -> tk.Label:
+def base_gui(master: gui.Window, database: str) -> tk.Label:
     """
     Creates the skeleton of the GUI
     @returns content label
@@ -89,7 +89,7 @@ def base_gui(master: gui.Window) -> tk.Label:
     # main content
     content = tk.Label(master, bg='#222222')
     content.state = "home"
-    scenes, scene_names = create_scenes(content)
+    scenes, scene_names = create_scenes(content, database)
 
     def change_scene(scene_id):
         if content.state != scene_id:

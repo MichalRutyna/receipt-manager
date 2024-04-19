@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from src.gui.data_view import DataView
-from src.api.database_to_model import *
+from src.api.database_to_model import get_table_data
 
 # TODO Config
 DATABASE_TABLES = {
@@ -56,25 +56,25 @@ POSSIBLE_TABLES = [_("categories"), _("subcategories"),
                    _("products"), _("store_items"),
                    _("purchase_instances"), _("tickets")]
 
-DEFAULT_TABLE = _('store_items')
-
 
 class DataModel:
-    def __init__(self, view: DataView):
+    def __init__(self, view: DataView, database: str):
         self.view = view
         self.table = ""
         self.columns = []
         self.data = []
+        self.database = database
 
     def change_table(self, new_table: tk.StringVar | str) -> None:
         if isinstance(new_table, tk.StringVar):
             new_table = new_table.get()
         self.table = new_table
         self.columns = DATABASE_TABLES[new_table]
+        self.update_data()
         self.update_view()
 
     def update_data(self) -> None:
-        pass
+        self.data = get_table_data(self.database, self.table)
 
     def update_view(self) -> None:
         self.view.show(self.columns, self.data)
