@@ -100,7 +100,6 @@ def base_gui(master: gui.Window, database: str) -> tk.Label:
             content.state = scene_id
 
     for sceneId, sceneName in scene_names.items():
-        print(sceneId)
         (gui.Button(navigation, "#333333", height=2, text=sceneName,
                    command=lambda new_scene=sceneId: change_scene(new_scene))
          .pack(side='top', fill='x'))
