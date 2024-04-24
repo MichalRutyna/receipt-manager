@@ -30,7 +30,7 @@ def create_scenes(content_label: tk.Label, database: str) -> Tuple[Dict[str, tk.
 
     Adding an item here will NOT create a new scene
     """
-    from src.gui.database_scene import create_database_scene
+    from src.gui.database_scene.create_database_scene import create_database_scene
     home = create_home_scene(content_label)
     database = create_database_scene(content_label, database)
 

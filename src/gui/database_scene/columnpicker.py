@@ -9,4 +9,4 @@ class ColumnPickerView:
         a.pack()
 
     def show(self, columns, column_values):
-        print(columns, column_values)
+        print()

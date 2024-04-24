@@ -9,5 +9,4 @@ def get_table_data(database: str, table: str) -> list[list]:
     with StoreDatabase(database) as db:
         db.cursor.execute(f'SELECT * FROM {table}')
         data = db.cursor.fetchall()
-    print("data:\n" + repr(data) )
     return data
