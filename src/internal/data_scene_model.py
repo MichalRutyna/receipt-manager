@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 from src.api.database_to_model import get_table_data
 
-from src.load_config import DATABASE_COLUMNS
+from src.load_config import DEFAULT_DATABASE_COLUMNS
 
 
 class DataModel:
@@ -27,6 +27,8 @@ class DataModel:
         """
         Change the sorting of the provided column
         """
+        if self.sorting:
+            self.sorting.clear()
         value = self.sorting.get(column)
         if value is None:
             self.sorting[column] = 'desc'
@@ -49,8 +51,7 @@ class DataModel:
         if new_table == self.table:
             return
         self.table = new_table
-        self.columns = DATABASE_COLUMNS[new_table]
-        self.column_values = None  # TODO default columns to show
+        self.columns = DEFAULT_DATABASE_COLUMNS[new_table]
         self.update_rows()
         self.update_views()
 
@@ -62,11 +63,11 @@ class DataModel:
         self.update_views()
 
     def update_rows(self) -> None:
-        self.rows = get_table_data(self.database, self.table)
+        self.rows = get_table_data(self.database, self.table, self.columns)
 
     def update_views(self) -> None:
         if self.view is None:
             return
         self.view.show(self.columns, self.rows)
         if self.column_picker:
-            self.column_picker.show(self.columns, self.column_values)
+            self.column_picker.show(self.columns, True)
