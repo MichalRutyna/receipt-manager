@@ -27,7 +27,7 @@ class DataModel:
         """
         Change the sorting of the provided column
         """
-        if self.sorting:
+        if list(self.sorting.keys()) != [column]:
             self.sorting.clear()
         value = self.sorting.get(column)
         if value is None:
@@ -38,6 +38,7 @@ class DataModel:
             self.sorting.pop(column)
 
         print(self.sorting)
+        self.update_views()
 
     def register_column_picker(self, column_picker: ColumnPickerView):
         self.column_picker = column_picker
@@ -68,6 +69,6 @@ class DataModel:
     def update_views(self) -> None:
         if self.view is None:
             return
-        self.view.show(self.columns, self.rows)
+        self.view.show(self.columns, self.rows, self.sorting)
         if self.column_picker:
             self.column_picker.show(self.columns, True)
