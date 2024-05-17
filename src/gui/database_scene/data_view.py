@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from tkinter import ttk
 from typing import TYPE_CHECKING
+from numbers import Number
 
 if TYPE_CHECKING:
     from internal.data_scene_model import DataModel
@@ -29,9 +30,12 @@ class DataView:
         """
         # delete all data being shown
         temp = []
+
         for row in data:
             row = list(row)
             row = [x if x is not None else "Not set" for x in row]
+            row = [round(x, 2) if isinstance(x, float) else x for x in row]
+            row = [int(x) if (isinstance(x, float) and x.is_integer()) else x for x in row]
             temp.append(row)
         data = temp
 

@@ -105,3 +105,30 @@ DEFAULT_DATABASE_COLUMNS = {
             _('category_name'),
         ],
 }
+
+DEFAULT_DATABASE_COLUMN_VALUES = {
+    _('store_items'):
+        [
+            True, False, True, True
+        ],
+    _('purchase_instances'):
+        [
+            True, True, True, True, True
+        ],
+    _('tickets'):
+        [
+            True, True, True, True
+        ],
+    _('products'):
+        [
+            True, True, True
+        ],
+    _('categories'):
+        [
+            True, True
+        ],
+    _('subcategories'):
+        [
+            True, True, True
+        ],
+}

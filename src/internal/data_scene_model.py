@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 from src.api.database_to_model import get_table_data
 
-from src.load_config import DEFAULT_DATABASE_COLUMNS
+from src.load_config import DEFAULT_DATABASE_COLUMNS, DEFAULT_DATABASE_COLUMN_VALUES
 
 
 class DataModel:
@@ -18,12 +18,12 @@ class DataModel:
         self.database = database
         self.column_picker = None
         self.table = ""
-        self.columns = []
-        self.column_values = []
+        self.columns: list[str] = []
+        self.column_values: list[bool] = []
         self.rows = []
         self.sorting = {}
 
-    def change_sorting(self, column):
+    def change_sorting(self, column) -> None:
         """
         Change the sorting of the provided column
         """
@@ -37,13 +37,12 @@ class DataModel:
         else:
             self.sorting.pop(column)
 
-        print(self.sorting)
         self.update_views()
 
-    def register_column_picker(self, column_picker: ColumnPickerView):
+    def register_column_picker(self, column_picker: ColumnPickerView) -> None:
         self.column_picker = column_picker
 
-    def register_data_view(self, data_view: DataView):
+    def register_data_view(self, data_view: DataView) -> None:
         self.view = data_view
 
     def change_table(self, new_table: tk.StringVar | str) -> None:
@@ -53,22 +52,36 @@ class DataModel:
             return
         self.table = new_table
         self.columns = DEFAULT_DATABASE_COLUMNS[new_table]
+        self.column_values = DEFAULT_DATABASE_COLUMN_VALUES[new_table]
         self.update_rows()
         self.update_views()
 
     def change_columns(self, column: str, value: bool) -> None:
-        if value and column not in self.columns:
-            self.columns.append(column)
-        elif not value and column in self.columns:
-            self.columns.remove(column)
+        if column in self.columns:
+            self.column_values[self.columns.index(column)] = not value
+        self.update_rows()
         self.update_views()
 
     def update_rows(self) -> None:
-        self.rows = get_table_data(self.database, self.table, self.columns)
+        show = []
+        for i, col in enumerate(self.columns):
+            if self.column_values[i]:
+                show.append(col)
+        if not show:
+            return
+        self.rows = get_table_data(self.database, self.table, show)
 
     def update_views(self) -> None:
         if self.view is None:
             return
-        self.view.show(self.columns, self.rows, self.sorting)
+        show = []
+        for i, col in enumerate(self.columns):
+            if self.column_values[i]:
+                show.append(col)
+        if not show:
+            # TODO show some alert or sth
+            return
+        self.view.show(show, self.rows, self.sorting)
         if self.column_picker:
-            self.column_picker.show(self.columns, True)
+            columns = zip(self.columns, self.column_values)
+            self.column_picker.show(list(columns))
